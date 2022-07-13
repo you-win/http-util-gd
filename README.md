@@ -1,5 +1,8 @@
 # HTTP Util GD
-HTTP utilies for Godot 3.x.
+HTTP utilities for Godot 3.x.
+
+Provided utilities:
+* [HTTP Server](#http-server)
 
 ## HTTP Server
 An HTTP server that can be configured declaratively or imperatively.
@@ -72,3 +75,6 @@ func hello(response):
 
 	return OK
 ```
+
+## Known issues
+- [ ] Sending [Postman](https://www.postman.com/) requests against the HTTP Server will cause the server to hang
