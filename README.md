@@ -3,6 +3,7 @@ HTTP utilities for Godot 3.x.
 
 Provided utilities:
 * [HTTP Server](#http-server)
+* [REST](#rest)
 * [Server Sent Events](#server-sent-events)
 
 ## HTTP Server
@@ -75,6 +76,26 @@ func hello(response):
 	response.body = "hello world"
 
 	return OK
+```
+
+## REST
+A REST request helper that exists as a `Reference`, not as a `Node`. Requests are constructed via a builder pattern.
+
+### Example
+
+```GDScript
+const REST = preload("path/to/rest.gd")
+
+func _init() -> void:
+	var request := Rest.create("www.google.com") \
+		.as_get() \
+		.default_user_agent() \
+		.default_accept_all() \
+		.build()
+	
+	var response = yield(request.send(), "completed")
+	
+	print(response) # Prints the HTML of www.google.com + headers and the response code
 ```
 
 ## Server Sent Events
