@@ -3,11 +3,12 @@ HTTP utilities for Godot 3.x.
 
 Provided utilities:
 * [HTTP Server](#http-server)
+* [Server Sent Events](#server-sent-events)
 
 ## HTTP Server
 An HTTP server that can be configured declaratively or imperatively.
 
-### Examples
+### Example
 
 Declarative
 ```GDScript
@@ -76,5 +77,43 @@ func hello(response):
 	return OK
 ```
 
+## Server Sent Events
+An implementation of [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). Uses Godot's `WebSocketClient` internally.
+Needs to be manually polled.
+
+### Example
+
+```GDScript
+const SSE = preload("path/to/server_side_events.gd")
+
+var client
+
+func _init() -> void:
+	client = SSE.new("my_host", {
+		"with_credentials": false,
+		"newline_type": SSE.NewlineType.LF
+	})
+	
+	subscribe()
+	subscribe_to_event()
+
+func _process(delta: float) -> void:
+	client.poll()
+
+# Subscribe to all events
+func subscribe():
+	client.connect("message", self, "_on_message")
+
+# Subscribe to messages to contain a specific event
+func subscribe_to_event():
+	client.add_event_listener("my_event", self, "_my_event_callback")
+
+func _on_message(message: SSE.ServerSideEvent) -> void:
+	print(message.data)
+
+func _my_event_callback(message: SSE.ServerSideEvent):
+	print(message.data)
+```
+
 ## Known issues
-- [ ] Sending [Postman](https://www.postman.com/) requests against the HTTP Server will cause the server to hang
+- [ ] Sending [Postman](https://www.postman.com/) requests against the [HTTP Server](#http-server) will cause the server to hang
