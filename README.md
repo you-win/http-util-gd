@@ -6,6 +6,8 @@ Provided utilities:
 * [REST](#rest)
 * [Server Sent Events](#server-sent-events)
 
+See `demo.tscn` for an example of most utilities.
+
 ## HTTP Server
 An HTTP server that can be configured declaratively or imperatively.
 
@@ -84,10 +86,10 @@ A REST request helper that exists as a `Reference`, not as a `Node`. Requests ar
 ### Example
 
 ```GDScript
-const REST = preload("path/to/rest.gd")
+const HttpUtil = preload("path/to/http_util.gd")
 
 func _init() -> void:
-	var request := Rest.create("www.google.com") \
+	var request := HttpUtil.Rest.create("www.google.com") \
 		.as_get() \
 		.default_user_agent() \
 		.default_accept_all() \
@@ -105,12 +107,12 @@ Needs to be manually polled.
 ### Example
 
 ```GDScript
-const SSE = preload("path/to/server_side_events.gd")
+const HttpUtil = preload("path/to/http_util.gd")
 
 var client
 
 func _init() -> void:
-	client = SSE.new("my_host", {
+	client = HttpUtil.SSE.new("my_host", {
 		"with_credentials": false,
 		"newline_type": SSE.NewlineType.LF
 	})
@@ -137,4 +139,5 @@ func _my_event_callback(message: SSE.ServerSideEvent):
 ```
 
 ## Known issues
-- [ ] Sending [Postman](https://www.postman.com/) requests against the [HTTP Server](#http-server) will cause the server to hang
+- [x] Sending [Postman](https://www.postman.com/) requests against the [HTTP Server](#http-server) will cause the server to hang
+  - Postman sends 2 request: an empty request and the actual request. Max retries implemented to abort parsing a request if no data is found in time

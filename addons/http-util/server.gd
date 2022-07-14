@@ -325,6 +325,8 @@ enum ParserState {
 	BODY
 }
 
+var request_parsing_retry_max: int = 5
+
 var _server := TCP_Server.new()
 var _router: Router
 
@@ -366,15 +368,6 @@ func _listen(_x) -> void:
 		var peer := _server.take_connection()
 		
 		print_debug("Peer connected %s:%d" % [peer.get_connected_host(), peer.get_connected_port()])
-
-		# TODO testing
-#		peer.put_data("HTTP/2 200\r\n".to_utf8())
-#
-#		peer.put_data("Content-Type: application/json; charset=UTF-8\r\n".to_utf8())
-#
-#		var body := "hello world".to_utf8()
-#		peer.put_data(("Content-Length: %d\r\n\r\n" % body.size()).to_utf8())
-#		peer.put_data(body)
 		
 		var request := _parse_request(peer)
 		if request.is_valid:
@@ -382,8 +375,9 @@ func _listen(_x) -> void:
 			if err != OK:
 				print_debug("Error occurred while handling request: %d" % err)
 		
-		# TODO needs to be handled by the router and only cleaned up here as a last resort
-		peer.disconnect_from_host()
+		# Cleanup peer if the handler didn't already clean it up
+		if peer.is_connected_to_host():
+			peer.disconnect_from_host()
 
 func _parse_request(peer: StreamPeerTCP) -> Request:
 	var req := Request.new()
@@ -391,6 +385,8 @@ func _parse_request(peer: StreamPeerTCP) -> Request:
 
 	var state: int = ParserState.FIRST_LINE_READ
 	var content_length: int = 0
+	
+	var retry_count: int = 0
 
 	while true:
 		if not peer.is_connected_to_host():
@@ -399,6 +395,10 @@ func _parse_request(peer: StreamPeerTCP) -> Request:
 
 		var available_bytes := peer.get_available_bytes()
 		if available_bytes < 1:
+			retry_count += 1
+			if retry_count > request_parsing_retry_max:
+				return req
+			
 			OS.delay_msec(100)
 			continue
 
@@ -410,7 +410,6 @@ func _parse_request(peer: StreamPeerTCP) -> Request:
 		var string_builder := Array()
 		var data: PoolByteArray = data_tuple[1]
 		for byte in data:
-			
 			match state:
 				ParserState.FIRST_LINE_READ:
 					state = _add_char(byte, string_builder, state, ParserState.FIRST_LINE_EXPECT_NL)

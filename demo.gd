@@ -1,7 +1,6 @@
 extends CanvasLayer
 
 const HttpUtil = preload("res://addons/http-util/http_util.gd")
-const Rest = preload("res://addons/http-util/rest.gd")
 
 var _server: HttpUtil.Server
 
@@ -48,7 +47,7 @@ func _input(event: InputEvent) -> void:
 		print("is_alive %s" % str(_server._server_thread.is_alive()))
 		print("is_active %s" % str(_server._server_thread.is_active()))
 	elif event.pressed and event.button_index == BUTTON_RIGHT:
-		var request := Rest.create("localhost").port(9999).as_get().default_user_agent().default_accept_all().uri("imperative").build()
+		var request := HttpUtil.Rest.create("localhost").port(9999).as_get().default_user_agent().default_accept_all().uri("imperative").build()
 #		var request := Rest.create("www.google.com").as_get().default_user_agent().default_accept_all().build()
 		var response = yield(request.send(), "completed")
 		
