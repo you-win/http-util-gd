@@ -47,8 +47,9 @@ func _input(event: InputEvent) -> void:
 		print("is_alive %s" % str(_server._server_thread.is_alive()))
 		print("is_active %s" % str(_server._server_thread.is_active()))
 	elif event.pressed and event.button_index == BUTTON_RIGHT:
-		var request := HttpUtil.Rest.create("localhost").port(9999).as_get().default_user_agent().default_accept_all().uri("imperative").build()
-#		var request := Rest.create("www.google.com").as_get().default_user_agent().default_accept_all().build()
+#		var request := HttpUtil.RequestBuilder.create("localhost").port(9999).as_get().default_user_agent().default_accept_all().uri("imperative").build()
+		var request := HttpUtil.RequestBuilder.create("https://raw.githubusercontent.com").uri("virtual-puppet-project/.github/master/updates/listing.json").port(443).as_get().default_user_agent().default_accept_all().build()
+#		var request := HttpUtil.RequestBuilder.create("www.google.com").as_get().port(80).default_user_agent().default_accept_all().build()
 		var response = yield(request.send(), "completed")
 		
 		print(response)
