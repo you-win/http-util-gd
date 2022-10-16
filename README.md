@@ -3,7 +3,7 @@ HTTP utilities for Godot 3.x.
 
 Provided utilities:
 * [HTTP Server](#http-server)
-* [REST](#rest)
+* [HTTP Request Builder](#http-request-builder)
 * [Server Sent Events](#server-sent-events)
 
 See `demo.tscn` for an example of most utilities.
@@ -80,7 +80,7 @@ func hello(response):
 	return OK
 ```
 
-## REST
+## HTTP Request Builder
 A REST request helper that exists as a `Reference`, not as a `Node`. Requests are constructed via a builder pattern.
 
 ### Example
@@ -89,7 +89,7 @@ A REST request helper that exists as a `Reference`, not as a `Node`. Requests ar
 const HttpUtil = preload("path/to/http_util.gd")
 
 func _init() -> void:
-	var request := HttpUtil.Rest.create("www.google.com") \
+	var request := HttpUtil.HttpRequestBuilder.create("www.google.com") \
 		.as_get() \
 		.default_user_agent() \
 		.default_accept_all() \

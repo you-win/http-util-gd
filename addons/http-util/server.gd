@@ -152,17 +152,21 @@ class Router:
 			route.args.clear()
 	
 	func handle(request: Request) -> int:
-		if not router_config.has(request.path):
-			print_debug(router_config.keys())
-			return ERR_UNCONFIGURED
-		
-		var route: Route = router_config[request.path]
-		
 		var response := {
 			"protocol": request.protocol,
 			"response_code": 200,
 			"headers": []
 		}
+		
+		if not router_config.has(request.path):
+			printerr("Route %s not configured in keys %s" % [request.path, str(router_config.keys())])
+			response.response_code = 404
+			
+			_send_response(request.peer, response)
+			
+			return ERR_UNCONFIGURED
+		
+		var route: Route = router_config[request.path]
 		
 		var args := [response]
 		if route.pass_stream_peer:

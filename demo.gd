@@ -68,6 +68,20 @@ func default(response, something) -> int:
 	print("index")
 	print("my arg %s" % str(something))
 	
+	response.body = """
+<!doctype html>
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+	Hello World!
+</body>
+
+</html>
+	""".strip_edges()
+	
 	return OK
 
 func hello_declarative(response, peer):
